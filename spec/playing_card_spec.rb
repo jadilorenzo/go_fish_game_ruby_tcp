@@ -45,4 +45,14 @@ describe 'PlayingCard' do
       expect(king_of_clubs.to_s).to eq 'King of Clubs'
     end
   end
+
+  context '#self.valid_rank?' do
+    it 'returns true for valid rank' do
+      expect(PlayingCard.valid_rank?('A')).to be_truthy
+    end
+
+    it 'returns false for invalid rank' do
+      expect(PlayingCard.valid_rank?('C')).to be_falsey
+    end
+  end
 end

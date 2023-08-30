@@ -5,10 +5,11 @@ require_relative '../lib/playing_card'
 require_relative '../lib/go_fish_player'
 
 describe 'GoFishGame' do
-  let(:player1) { WarPlayer.new('Muffin') }
-  let(:player2) { WarPlayer.new('Potato') }
-  let(:game) { GoFishGame.new(players: [players[0], players[1]]) }
+  let(:player1) { GoFishPlayer.new('Muffin') }
+  let(:player2) { GoFishPlayer.new('Potato') }
+  let(:game) { GoFishGame.new(players: [player1, player2]) }
   let(:card_deck) { CardDeck.new }
+  let(:players) { game.players }
 
   context '#initialize' do
     it 'has players, card deck, no winner, and has not been dealt' do
@@ -21,9 +22,9 @@ describe 'GoFishGame' do
 
     it 'throws error if not enough players' do
       expect do
-        GoFishGame.new(players: [WarPlayer.new('Bobby Big Boy')])
+        GoFishGame.new(players: [GoFishPlayer.new('Bobby Big Boy')])
       end.to raise_error(GoFishGame::NotEnoughPlayers)
-      expect { GoFishGame.new [] }.to raise_error(GoFishGame::NotEnoughPlayers)
+      expect { GoFishGame.new players: [] }.to raise_error(GoFishGame::NotEnoughPlayers)
     end
 
     it 'takes a deck and doesn\'t shuffle it' do
@@ -42,9 +43,8 @@ describe 'GoFishGame' do
   end
 
   context '#deal' do
-    it 'should deal all the cards' do
+    it 'should deal the cards' do
       game.deal
-      expect(game.deck.empty?).to be_truthy
       expect(players[0].hand.length).to eq(GoFishGame::DEAL_SIZE[2])
       expect(players[1].hand.length).to eq(GoFishGame::DEAL_SIZE[2])
     end
