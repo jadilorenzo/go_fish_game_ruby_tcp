@@ -28,7 +28,7 @@ Manages: rules of the game/game logic
 Collaborators: `CardDeck`
 
 ### `CardDeck`
-Manages: order of cards outside of `player`'s hands
+Manages: order of cards outside of `player`'s hands<br>
 Collaborators: `CardDeck`
 
 ### `PlayingCard`
