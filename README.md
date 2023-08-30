@@ -24,7 +24,7 @@ If you would like to contribute to this project, feel free to submit a pull requ
 
 ## Models
 ### `GoFishGame`
-Manages: rules of the game/game logic
+Manages: rules of the game/game logic<br>
 Collaborators: `CardDeck`
 
 ### `CardDeck`
@@ -32,9 +32,9 @@ Manages: order of cards outside of `player`'s hands<br>
 Collaborators: `CardDeck`
 
 ### `PlayingCard`
-Manages: rank and suit
+Manages: rank and suit<br>
 Collaborators: `CardDeck`, `Player`
 
 ### `GoFishPlayer`
-Manages: hand, taking turns, creating books
+Manages: hand, taking turns, creating books<br>
 Collaborators: `Card`, `Game`
