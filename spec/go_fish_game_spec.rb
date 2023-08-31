@@ -28,6 +28,15 @@ describe 'GoFishGame' do
       expect { GoFishGame.new players: [] }.to raise_error(GoFishGame::NotEnoughPlayers)
     end
 
+    it 'throws error if too many players' do
+      expect do
+        GoFishGame.new(
+          players:
+            8.times.map { GoFishPlayer.new('Bobby Big Boy') }.to_a
+        )
+      end.to raise_error(GoFishGame::TooManyPlayers)
+    end
+
     it 'takes a deck and doesn\'t shuffle it' do
       game = GoFishGame.new(deck: card_deck)
       expect(game.deck).to eq card_deck

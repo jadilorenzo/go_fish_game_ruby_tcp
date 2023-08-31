@@ -20,18 +20,15 @@ class GoFishPlayer
     new_cards
   end
 
-  def give
-    @hand.shift
-  end
-
-  def get(rank)
+  def give_cards_of_rank(rank)
     raise InvalidRank unless PlayingCard.valid_rank?(rank)
 
-    matching_cards, @hand = @hand.partition { |card| card.rank == rank }
+    matching_cards = cards_of_rank rank
+    @hand -= matching_cards
     matching_cards
   end
 
-  def has_rank?(rank)
+  def rank_in_hand?(rank)
     hand.any? { |card| card.rank == rank }
   end
 
@@ -44,6 +41,10 @@ class GoFishPlayer
     return @hand.push card if card
 
     @hand += cards
+  end
+
+  def cards_of_rank(rank)
+    hand.filter { |card| card.rank == rank }
   end
 
   def check_for_books

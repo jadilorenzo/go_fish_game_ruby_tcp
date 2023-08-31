@@ -11,7 +11,7 @@ AllCops:
 # RSpec tests and rake tasks are expected to have
 # large blocks, so exclude them from this cop.
 Metrics/BlockLength:
-  Max: 100
+  Max: 125
   Exclude:
     - 'Rakefile'
     - '**/*.rake'

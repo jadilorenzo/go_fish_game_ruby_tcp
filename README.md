@@ -147,6 +147,7 @@ King of Clubs
 10 of Clubs
 8 of Hearts
 8 of Spades
+8 of Diamonds
 4 of Hearts
 3 of Spades
 Players: 
@@ -154,5 +155,5 @@ Player 1
 Who would you like to ask? (Player 1 / 1)
 Response: 1
 For what rank? (K, 10, 8, 4, 3 or card name)
-Response: 8
+Response: 3
 ```

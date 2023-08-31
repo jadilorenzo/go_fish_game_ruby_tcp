@@ -30,13 +30,13 @@ describe 'GoFishPlayer' do
   context '#take' do
     it 'adds a card' do
       player.take(card: card1)
-      card = player.give
+      card = player.hand.first
       expect(card).to eq card1
     end
 
     it 'adds cards' do
       player.take(cards: [card1, card2])
-      card = player.give
+      card = player.hand.first
       expect(card).to eq card1
     end
 
@@ -66,50 +66,50 @@ describe 'GoFishPlayer' do
     end
   end
 
-  context '#give' do
-    it 'gives card' do
-      player.take(cards: [card1, card2, card3])
-      expect(player.give).to eq card1
-      expect(player.hand.length).to eq 2
-      expect(player.give).to eq card2
-      expect(player.hand.length).to eq 1
-    end
-  end
+  # context '#give' do
+  #   it 'gives card' do
+  #     player.take(cards: [card1, card2, card3])
+  #     expect(player.give).to eq card1
+  #     expect(player.hand.length).to eq 2
+  #     expect(player.give).to eq card2
+  #     expect(player.hand.length).to eq 1
+  #   end
+  # end
 
-  context '#get' do
+  context '#give_cards_of_rank' do
     before do
       player.take(cards: [card1, card2, card3, card4])
     end
 
     it 'throws error if given invalid rank' do
-      expect { player.get('') }.to raise_error GoFishPlayer::InvalidRank
-      expect { player.get('L') }.to raise_error GoFishPlayer::InvalidRank
-      expect { player.get('Ace') }.to raise_error GoFishPlayer::InvalidRank
+      expect { player.give_cards_of_rank('') }.to raise_error GoFishPlayer::InvalidRank
+      expect { player.give_cards_of_rank('L') }.to raise_error GoFishPlayer::InvalidRank
+      expect { player.give_cards_of_rank('Ace') }.to raise_error GoFishPlayer::InvalidRank
     end
 
     it 'returns one card if it matches the rank' do
-      expect(player.get(card1.rank)).to eq [card1]
+      expect(player.give_cards_of_rank(card1.rank)).to eq [card1]
     end
 
     it 'returns cards if they match the rank' do
-      expect(player.get(card2.rank)).to eq [card2, card4]
+      expect(player.give_cards_of_rank(card2.rank)).to eq [card2, card4]
       expect(player.hand).to eq [card1, card3]
     end
 
     it 'returns nothing if no cards match the rank' do
       sample_rank_not_in_hand = '5'
-      expect(player.get(sample_rank_not_in_hand)).to eq []
+      expect(player.give_cards_of_rank(sample_rank_not_in_hand)).to eq []
     end
   end
 
-  context '#has_rank?' do
+  context '#rank_in_hand?' do
     it 'returns true if player has the rank' do
       player.take(card: card1)
-      expect(player.has_rank?(card1.rank)).to be_truthy
+      expect(player.rank_in_hand?(card1.rank)).to be_truthy
     end
 
     it 'returns false if player does not have the rank' do
-      expect(player.has_rank?(card2.rank)).to be_falsey
+      expect(player.rank_in_hand?(card2.rank)).to be_falsey
     end
   end
 end
