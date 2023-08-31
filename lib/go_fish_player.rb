@@ -27,8 +27,7 @@ class GoFishPlayer
   def get(rank)
     raise InvalidRank unless PlayingCard.valid_rank?(rank)
 
-    matching_cards = @hand.filter { |card| card.rank == rank }
-    @hand = @hand.reject { |card| card.rank == rank }
+    matching_cards, @hand = @hand.partition { |card| card.rank == rank }
     matching_cards
   end
 
