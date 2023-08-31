@@ -15,13 +15,9 @@ class GoFishPlayer
   end
 
   def take(cards: nil, card: nil)
-    raise TakeReceivedCardsAndCard if card && cards
-    raise TakeReceivedNothing if card.nil? && cards.nil?
-
+    new_cards = add cards: cards, card: card
     check_for_books
-    return @hand.push card if card
-
-    @hand += cards
+    new_cards
   end
 
   def give
@@ -41,6 +37,15 @@ class GoFishPlayer
   end
 
   private
+
+  def add(card: nil, cards: nil)
+    raise TakeReceivedCardsAndCard if card && cards
+    raise TakeReceivedNothing if card.nil? && cards.nil?
+
+    return @hand.push card if card
+
+    @hand += cards
+  end
 
   def check_for_books
     ranks_in_hand = hand.map(&:rank)

@@ -9,6 +9,12 @@ describe 'GoFishPlayer' do
   let(:card3) { PlayingCard.new('3', 'S') }
   let(:card4) { PlayingCard.new('2', 'H') }
   let(:player) { GoFishPlayer.new('Pancy Nelosi') }
+  let(:ace_book) do
+    [
+      PlayingCard.new('A', 'S'), PlayingCard.new('A', 'H'),
+       PlayingCard.new('A', 'C'), PlayingCard.new('A', 'D')
+    ]
+  end
 
   it 'has name, empty hand, and empty books' do
     expect(player.name).to eq 'Pancy Nelosi'
@@ -42,16 +48,21 @@ describe 'GoFishPlayer' do
       expect { player.take }.to raise_error GoFishPlayer::TakeReceivedNothing
     end
 
-    it 'adds books when a book is found and removes cards from hand' do
-      player.take(cards: [
-        PlayingCard.new('A', 'S'),
-        PlayingCard.new('A', 'H'),
-        PlayingCard.new('A', 'C'),
-        PlayingCard.new('A', 'D')
-      ])
+    it 'adds one book when found and removes cards from hand' do
+      player.take(cards: ace_book)
       player.take(card: card2)
+      expect(player.books).to eq [ace_book]
       expect(player.books.length).to eq 1
       expect(player.hand.length).to be 1
+    end
+
+    it 'adds multiple books as they are found and removes all the cards from hand' do
+      player.take(cards: [
+        PlayingCard.new('3', 'H'), PlayingCard.new('3', 'S'), PlayingCard.new('3', 'D')
+      ] + ace_book)
+      player.take(card: card3)
+      expect(player.books.length).to eq 2
+      expect(player.hand.length).to be 0
     end
   end
 
