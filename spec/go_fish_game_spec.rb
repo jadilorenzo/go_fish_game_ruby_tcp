@@ -104,5 +104,12 @@ describe 'GoFishGame' do
       game.deal
       expect { game.take_turn(rank: '5', player: player2) }.to raise_error(GoFishGame::PlayerDoesNotHaveRequestedRank)
     end
+
+    it 'should raise PlayerAskedForHimself if the player asks for a card from themselves' do
+      game.deal
+      expect do
+        game.take_turn(rank: player1.hand.first.rank, player: player1)
+      end.to raise_error(GoFishGame::PlayerAskedForHimself)
+    end
   end
 end

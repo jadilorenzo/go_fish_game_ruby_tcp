@@ -8,6 +8,7 @@ class GoFishGame
   class NotEnoughPlayers < StandardError; end
   class InvalidRank < StandardError; end
   class PlayerDoesNotHaveRequestedRank < StandardError; end
+  class PlayerAskedForHimself < StandardError; end
 
   DEAL_SIZE = {
     2 => 7,
@@ -56,6 +57,7 @@ class GoFishGame
   def take_turn(rank:, player:)
     raise InvalidRank unless PlayingCard.valid_rank? rank
     raise PlayerDoesNotHaveRequestedRank unless current_player.has_rank? rank
+    raise PlayerAskedForHimself if current_player == player
 
     recieved_cards = ask_for_rank(rank: rank, player: player)
     return give_cards_to_player recieved_cards unless recieved_cards.empty?
