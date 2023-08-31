@@ -52,28 +52,40 @@ describe 'GoFishPlayer' do
     end
   end
 
-  context '#ask' do
+  context '#get' do
     before do
       player.take(cards: [card1, card2, card3, card4])
     end
 
     it 'throws error if given invalid rank' do
-      expect { player.ask('') }.to raise_error GoFishPlayer::InvalidRank
-      expect { player.ask('L') }.to raise_error GoFishPlayer::InvalidRank
-      expect { player.ask('Ace') }.to raise_error GoFishPlayer::InvalidRank
+      expect { player.get('') }.to raise_error GoFishPlayer::InvalidRank
+      expect { player.get('L') }.to raise_error GoFishPlayer::InvalidRank
+      expect { player.get('Ace') }.to raise_error GoFishPlayer::InvalidRank
     end
 
     it 'returns one card if it matches the rank' do
-      expect(player.ask(card1.rank)).to eq [card1]
+      expect(player.get(card1.rank)).to eq [card1]
     end
 
     it 'returns cards if they match the rank' do
-      expect(player.ask(card2.rank)).to eq [card2, card4]
+      expect(player.get(card2.rank)).to eq [card2, card4]
+      expect(player.hand).to eq [card1, card3]
     end
 
     it 'returns nothing if no cards match the rank' do
       sample_rank_not_in_hand = '5'
-      expect(player.ask(sample_rank_not_in_hand)).to eq []
+      expect(player.get(sample_rank_not_in_hand)).to eq []
+    end
+  end
+
+  context '#has_rank?' do
+    it 'returns true if player has the rank' do
+      player.take(card: card1)
+      expect(player.has_rank?(card1.rank)).to be_truthy
+    end
+
+    it 'returns false if player does not have the rank' do
+      expect(player.has_rank?(card2.rank)).to be_falsey
     end
   end
 end

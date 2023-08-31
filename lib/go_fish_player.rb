@@ -25,9 +25,15 @@ class GoFishPlayer
     @hand.shift
   end
 
-  def ask(rank)
+  def get(rank)
     raise InvalidRank unless PlayingCard.valid_rank?(rank)
 
-    hand.filter { |card| card.rank == rank }
+    matching_cards = @hand.filter { |card| card.rank == rank }
+    @hand = @hand.reject { |card| card.rank == rank }
+    matching_cards
+  end
+
+  def has_rank?(rank)
+    hand.any? { |card| card.rank == rank }
   end
 end

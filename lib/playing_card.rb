@@ -17,7 +17,7 @@ class PlayingCard
   end
 
   def validate(rank, suit)
-    return if RANKS.include?(rank) && SUITS.include?(suit)
+    return if PlayingCard.valid_rank?(rank) && SUITS.include?(suit)
 
     raise InvalidRankOrSuitError, "Invalid rank or suit: #{rank} and #{suit}"
   end

@@ -18,6 +18,7 @@ describe 'GoFishGame' do
       expect(game.deck).to_not be_nil
       expect(game.winner).to be_nil
       expect(game.dealt?).to be_falsey
+      expect(game.turn).to eq 0
     end
 
     it 'throws error if not enough players' do
@@ -47,6 +48,61 @@ describe 'GoFishGame' do
       game.deal
       expect(players[0].hand.length).to eq(GoFishGame::DEAL_SIZE[2])
       expect(players[1].hand.length).to eq(GoFishGame::DEAL_SIZE[2])
+    end
+  end
+
+  context '#current_player' do
+    it 'should return the first player before the first turn,
+        should return the second player after the first turn,
+        and should go back to the first player after the second turn
+    ' do
+      game.start
+      expect(game.current_player).to eq player1
+      game.take_turn(rank: player1.hand.first.rank, player: player2)
+      expect(game.current_player).to eq player2
+      game.take_turn(rank: player2.hand.first.rank, player: player1)
+      expect(game.current_player).to eq player1
+    end
+  end
+
+  context '#go_fish' do
+    it 'should give a player a card from the deck' do
+      game.go_fish
+      expect(game.deck.cards_left).to eq CardDeck::DECK_SIZE - 1
+      expect(game.current_player.hand.length).to eq 1
+    end
+  end
+
+  context '#take_turn' do
+    it 'should not result in a go fish if the player asks for a card from a player that exists' do
+      # player 1 hand starts with 2 which player 2 hand also has
+      game.deal
+      expect(game.deck.shuffled?).to be_falsey
+      allow(game).to receive(:go_fish)
+      game.take_turn(rank: player1.hand.first.rank, player: player2)
+      expect(game).to_not have_received(:go_fish)
+    end
+
+    it 'should result in a go fish if the player asks for a card from a player that does not exist' do
+      # player 1 hand starts with 2 which player 2 hand also has
+      game.deal
+      expect(game.deck.shuffled?).to be_falsey
+      allow(game).to receive(:go_fish)
+      game.take_turn(rank: player1.hand.last.rank, player: player2)
+      expect(game).to have_received(:go_fish)
+    end
+
+    it 'should move cards from one player to the other on a successful query' do
+      game.deal
+      expect(game.deck.shuffled?).to be_falsey
+      game.take_turn(rank: player1.hand.first.rank, player: player2)
+      expect(player1.hand.length).to eq 8
+      expect(player2.hand.length).to eq 6
+    end
+
+    it 'should raise PlayerDoesNotHaveRequestedRank if the player does not have the requested card' do
+      game.deal
+      expect { game.take_turn(rank: '5', player: player2) }.to raise_error(GoFishGame::PlayerDoesNotHaveRequestedRank)
     end
   end
 end
