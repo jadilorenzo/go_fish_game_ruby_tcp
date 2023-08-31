@@ -120,5 +120,10 @@ describe 'GoFishGame' do
         game.take_turn(rank: player1.hand.first.rank, player: player1)
       end.to raise_error(GoFishGame::PlayerAskedForHimself)
     end
+
+    it 'determines the winner' do
+      game.deal
+      expect(game.winner).to be_nil
+    end
   end
 end

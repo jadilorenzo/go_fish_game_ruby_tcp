@@ -61,7 +61,7 @@ class GoFishGame
     raise PlayerDoesNotHaveRequestedRank unless current_player.rank_in_hand? rank
     raise PlayerAskedForHimself if current_player == player
 
-    recieved_cards = ask_for_rank(rank: rank, player: player)
+    recieved_cards = ask_for_rank(player: player, rank: rank)
     return give_cards_to_player recieved_cards unless recieved_cards.empty?
 
     @turn += 1
@@ -78,7 +78,7 @@ class GoFishGame
     turn % players.length
   end
 
-  def ask_for_rank(rank:, player:)
+  def ask_for_rank(player:, rank:)
     player.give_cards_of_rank rank
   end
 

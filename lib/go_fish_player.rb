@@ -32,6 +32,11 @@ class GoFishPlayer
     hand.any? { |card| card.rank == rank }
   end
 
+  # TODO: test me
+  def to_s
+    "#{name} has #{hand.count} cards and #{books.count} books"
+  end
+
   private
 
   def add(card: nil, cards: nil)
