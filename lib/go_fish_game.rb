@@ -78,6 +78,12 @@ class GoFishGame
     turn % players.length
   end
 
+  # TODO: named params are probably not needed here
+  # Especially for a private method that doesn't have
+  # complex arguments. They don't really buy much in terms of
+  # being intention revealing. Could change name to
+  # `ask_player_for_rank` and it would infer the order of arguments
+  # through the method name.
   def ask_for_rank(player:, rank:)
     player.give_cards_of_rank rank
   end

@@ -1,63 +1,106 @@
 require 'socket'
+require 'json'
 
 require_relative 'go_fish_game'
 
 class GoFishSocketServer
-  # attr_reader :pending_clients, :server
+  # attr_reader :clients_to_players
+  # attr_accessor :server, :pending_clients, :games, :clients
 
-  def initialize; end
+  attr_accessor :server, :pending_clients, :clients_to_players
 
-  def port_number
-    3336
+  def initialize
+    @clients_to_players = {}
+    # @games = []
+    @pending_clients = []
   end
 
-  def games
-    @games ||= []
+  def port_number
+    3332
   end
 
   def start
     @server = TCPServer.new(port_number)
   end
 
-  def accept_new_client(_player_name = 'Random Player')
+  def stop
+    server&.close
+  end
+
+  def accept_new_client
     client = @server.accept_nonblock
-    pending_clients.push(client)
-    client.puts(pending_clients.count.odd? ? 'Welcome.  Waiting for another player to join.' : 'Welcome.  You are about to go fishing.')
-    # associate player and client
+    client.puts 'Name?'
+    pending_clients.push client
   rescue IO::WaitReadable, Errno::EINTR
     puts 'No client to accept'
   end
 
   def create_game_if_possible
-    return unless pending_clients.count > 1
+    # capture input of the name
+    pending_clients.each do |client|
+      next if clients_to_players[client]
 
-    game = GoFishGame.new
-    games.push(game)
-    games_to_humans[game] = pending_clients.shift(2)
-    game.start
-    inform_players_of_hand(game)
+      begin
+        name = client.read_nonblock(1000)
+        clients_to_players[client] = GoFishPlayer.new(name: name.chomp)
+        client.puts 'Waiting for 1 more player' if pending_clients.size.odd?
+      rescue IO::WaitReadable, Errno::EINTR
+      end
+    end
+
+    return unless pending_clients.size.even?
+
+    # start a game if possible
+    pending_clients.each do |client|
+      client.puts 'Game is starting...'
+    end
+    GoFishGame.new(players: clients_to_players.values.last(2))
   end
 
-  def stop
-    return unless server
+  # TODO: Consider offloading these running methods into a separate class
+  # like GoFishGameRunner
+  def run_game(game)
+    game.start
+    game.current_player
+    other_players = game.players - [game.current_player]
+    current_client = players_to_clients[game.current_player]
+    current_client.puts "It's your turn. Here is your hand ..."
+    current_client.puts({ prompt: { players: other_players.map(&:name) } }.to_json)
+    other_players.each do |player|
+      client = players_to_clients[player]
+      client.puts "It's #{game.current_player.name}'s turn. Here is your hand ..."
+    end
+  end
 
-    server.close
-    @clients = []
+  def run_round(game)
+    current_player = game.current_player
+    other_players = game.players - [game.current_player]
+    current_client = players_to_clients[game.current_player]
+    begin
+      request = current_client.read_nonblock(1000)
+    rescue IO::WaitReadable, Errno::EINTR
+    end
+
+    return unless request
+
+    parsed_request = JSON.parse(request)
+    requested_player = game.players[parsed_request['player_index']]
+    game.take_turn(player: requested_player, rank: parsed_request['rank'])
+
+    if game.current_player == current_player
+      current_client.puts 'Nope, try harder'
+    else
+      current_client.puts "It's still your turn. Here is your hand ..."
+    end
+    other_players.each do |player|
+      client = players_to_clients[player]
+      client.puts 'Round result was ...'
+    end
   end
 
   private
 
-  def inform_players_of_hand(game)
-    humans = games_to_humans[game]
-    humans[0].puts(game.players[0])
-    humans[1].puts(game.players[1])
-  end
-
-  def pending_clients
-    @pending_clients ||= []
-  end
-
-  def games_to_humans
-    @games_to_humans ||= {}
+  def players_to_clients
+    clients_to_players.invert
   end
 end

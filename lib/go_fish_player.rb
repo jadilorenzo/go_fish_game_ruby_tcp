@@ -8,7 +8,7 @@ class GoFishPlayer
 
   attr_accessor :name, :hand, :books
 
-  def initialize(name, hand: [])
+  def initialize(name:, hand: [])
     @name = name
     @hand = hand
     @books = []
